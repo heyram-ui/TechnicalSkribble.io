@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: x / canvas.width,
                 y: y / canvas.height,
                 lastX: lastX / canvas.width,
-                lastY: lastY / canvas.width,
+                lastY: lastY / canvas.height,
                 color: isEraserActive ? 'white' : currentColor,
                 size: currentBrushSize,
                 type: 'draw'
@@ -719,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 removeCanvasEvents();
                 if (messageInput) messageInput.placeholder = translations[selectedLanguage].typeGuess;
-                if (viewWordBtn) viewWordBtn.classList.add('hidden'); // Hide for guessers
+                if (viewWordBtn) viewWordBtn.classList.remove('hidden');
             }
             
             updatePlayersList(roomData.players);
@@ -750,7 +750,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 removeCanvasEvents();
                 if (messageInput) messageInput.placeholder = translations[selectedLanguage].typeGuess;
-                if (viewWordBtn) viewWordBtn.classList.add('hidden'); // Hide for guessers
+                if (viewWordBtn) viewWordBtn.classList.remove('hidden');
             }
             
             // Update current drawer display
