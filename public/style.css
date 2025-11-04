@@ -33,8 +33,8 @@ body {
     font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--gradient-dark);
     color: var(--white);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: hidden;
     position: relative;
 }
 
@@ -66,13 +66,14 @@ body::before {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: opacity 0.5s ease, transform 0.5s ease;
     padding: 20px;
     z-index: 1;
+    overflow-y: auto;
 }
 
 .hidden {
@@ -83,7 +84,7 @@ body::before {
     background: rgba(26, 42, 58, 0.85);
     backdrop-filter: blur(20px);
     border-radius: var(--radius);
-    padding: 3rem;
+    padding: 2rem;
     box-shadow: var(--shadow);
     width: 100%;
     max-width: 500px;
@@ -91,6 +92,7 @@ body::before {
     border: 1px solid rgba(0, 204, 136, 0.2);
     position: relative;
     overflow: hidden;
+    margin: 1rem;
 }
 
 .container::before {
@@ -110,11 +112,18 @@ body::before {
     justify-content: center;
     margin-bottom: 2rem;
     position: relative;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .logo {
+        flex-direction: row;
+    }
 }
 
 .logo-icon {
     font-size: 3.5rem;
-    margin-right: 1.5rem;
     background: var(--gradient-primary);
     border-radius: 20px;
     width: 80px;
@@ -132,11 +141,17 @@ body::before {
 }
 
 .logo-text {
-    text-align: left;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .logo-text {
+        text-align: left;
+    }
 }
 
 .logo h1 {
-    font-size: 2.8rem;
+    font-size: 2.2rem;
     font-weight: 800;
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -145,6 +160,12 @@ body::before {
     margin: 0;
     line-height: 1.1;
     text-shadow: 0 2px 10px rgba(0, 204, 136, 0.2);
+}
+
+@media (min-width: 768px) {
+    .logo h1 {
+        font-size: 2.8rem;
+    }
 }
 
 .logo .tagline {
@@ -400,8 +421,14 @@ body::before {
 
 .feature-list {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .feature-list {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 .feature-item {
@@ -492,6 +519,13 @@ body::before {
     margin-top: 1.5rem;
     border: 2px dashed var(--goblin-green);
     position: relative;
+    flex-direction: column;
+}
+
+@media (min-width: 768px) {
+    .room-code {
+        flex-direction: row;
+    }
 }
 
 .room-code::before {
@@ -584,20 +618,38 @@ body::before {
 .game-container {
     display: flex;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background: var(--dark-slate);
     position: relative;
+    flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+    .game-container {
+        flex-direction: row;
+    }
 }
 
 .sidebar {
-    width: 380px;
+    width: 100%;
     background: linear-gradient(180deg, var(--charcoal) 0%, var(--dark-slate) 100%);
-    padding: 2rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid rgba(0, 153, 255, 0.2);
-    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 153, 255, 0.2);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
     position: relative;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+    .sidebar {
+        width: 380px;
+        max-height: 100vh;
+        border-right: 1px solid rgba(0, 153, 255, 0.2);
+        border-bottom: none;
+    }
 }
 
 .sidebar::before {
@@ -611,8 +663,8 @@ body::before {
 }
 
 .room-info {
-    margin-bottom: 2.5rem;
-    padding-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
     border-bottom: 2px solid rgba(0, 153, 255, 0.2);
 }
 
@@ -620,16 +672,25 @@ body::before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     font-weight: 700;
     font-size: 1.1rem;
     color: var(--white);
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .game-info {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .game-info {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
 }
 
 .timer-container, .drawer-info, .round-info {
@@ -644,6 +705,8 @@ body::before {
     border-left: 4px solid var(--goblin-green);
     transition: all 0.3s ease;
     color: var(--white);
+    flex: 1;
+    min-width: 200px;
 }
 
 .timer-container:hover, .drawer-info:hover, .round-info:hover {
@@ -658,7 +721,7 @@ body::before {
 }
 
 .players-list {
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
     flex: 0 0 auto;
 }
 
@@ -666,7 +729,7 @@ body::before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .players-header h3 {
@@ -689,7 +752,7 @@ body::before {
 }
 
 .players-container-wrapper {
-    max-height: 280px;
+    max-height: 150px;
     overflow-y: auto;
     border-radius: var(--radius);
     background: rgba(42, 58, 74, 0.7);
@@ -697,17 +760,23 @@ body::before {
     border: 2px solid rgba(0, 153, 255, 0.2);
 }
 
+@media (min-width: 1024px) {
+    .players-container-wrapper {
+        max-height: 280px;
+    }
+}
+
 .players-container {
     list-style: none;
-    padding: 1.2rem;
+    padding: 1rem;
 }
 
 .players-container li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 18px;
-    margin-bottom: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
     background: rgba(52, 68, 84, 0.7);
     border-radius: var(--radius);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -746,6 +815,13 @@ body::before {
 .player-name {
     font-weight: 600;
     color: var(--white);
+    font-size: 0.9rem;
+}
+
+@media (min-width: 768px) {
+    .player-name {
+        font-size: 1rem;
+    }
 }
 
 .drawing-icon {
@@ -756,7 +832,13 @@ body::before {
 .player-stats {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .player-stats {
+        gap: 0.8rem;
+    }
 }
 
 .score {
@@ -766,7 +848,7 @@ body::before {
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.9rem;
-    min-width: 50px;
+    min-width: 40px;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0, 204, 136, 0.2);
 }
@@ -788,7 +870,7 @@ body::before {
 }
 
 .chat-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .chat-header h3 {
@@ -803,21 +885,28 @@ body::before {
 .chat-messages {
     flex: 1;
     overflow-y: auto;
-    margin-bottom: 1.5rem;
-    padding: 1.2rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
     background: rgba(42, 58, 74, 0.7);
     border-radius: var(--radius);
     border: 2px solid rgba(0, 153, 255, 0.2);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.8rem;
     box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-height: 150px;
+}
+
+@media (min-width: 1024px) {
+    .chat-messages {
+        max-height: 200px;
+    }
 }
 
 .chat-message {
-    padding: 14px 18px;
+    padding: 12px 16px;
     border-radius: var(--radius);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     word-wrap: break-word;
     line-height: 1.5;
     animation: slideIn 0.3s ease-out;
@@ -904,9 +993,16 @@ body::before {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 2rem;
+    padding: 1.5rem;
     background: linear-gradient(135deg, var(--charcoal) 0%, var(--dark-slate) 100%);
     position: relative;
+    height: 50vh;
+}
+
+@media (min-width: 1024px) {
+    .game-area {
+        height: 100vh;
+    }
 }
 
 .canvas-container {
@@ -916,9 +1012,10 @@ body::before {
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     border: 2px solid rgba(0, 153, 255, 0.2);
     transition: all 0.3s ease;
+    min-height: 300px;
 }
 
 .canvas-container:hover {
@@ -931,20 +1028,22 @@ body::before {
     background-color: var(--white);
     cursor: crosshair;
     display: block;
+    touch-action: none;
 }
 
 .word-display {
     position: absolute;
-    top: 30px;
+    top: 20px;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, rgba(42, 58, 74, 0.95) 0%, rgba(26, 42, 58, 0.95) 100%);
-    padding: 24px 30px;
+    padding: 20px 25px;
     border-radius: var(--radius);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
     text-align: center;
     z-index: 10;
-    min-width: 320px;
+    min-width: 280px;
+    max-width: 90%;
     backdrop-filter: blur(20px);
     border: 1px solid rgba(0, 204, 136, 0.3);
     animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -962,19 +1061,33 @@ body::before {
 }
 
 .word {
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 800;
     color: var(--goblin-green);
     margin-bottom: 0.8rem;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    word-break: break-word;
+}
+
+@media (min-width: 768px) {
+    .word {
+        font-size: 2rem;
+    }
 }
 
 .hint {
     color: var(--sea-blue-light);
     font-style: italic;
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-bottom: 0.8rem;
     line-height: 1.4;
+    word-break: break-word;
+}
+
+@media (min-width: 768px) {
+    .hint {
+        font-size: 1.1rem;
+    }
 }
 
 .category {
@@ -989,13 +1102,13 @@ body::before {
 
 .view-word-btn {
     position: absolute;
-    bottom: 30px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--gradient-primary);
     color: var(--dark-slate);
     border: none;
-    padding: 14px 28px;
+    padding: 12px 24px;
     border-radius: var(--radius);
     cursor: pointer;
     z-index: 10;
@@ -1005,7 +1118,14 @@ body::before {
     box-shadow: var(--shadow);
     font-weight: 700;
     transition: all 0.3s ease;
-    font-size: 1rem;
+    font-size: 0.9rem;
+}
+
+@media (min-width: 768px) {
+    .view-word-btn {
+        padding: 14px 28px;
+        font-size: 1rem;
+    }
 }
 
 .view-word-btn:hover {
@@ -1016,12 +1136,25 @@ body::before {
 .tools {
     display: flex;
     flex-direction: column;
-    gap: 1.8rem;
-    padding: 2rem;
+    gap: 1.5rem;
+    padding: 1.5rem;
     background: rgba(42, 58, 74, 0.7);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     border: 2px solid rgba(0, 153, 255, 0.2);
+}
+
+@media (min-width: 768px) {
+    .tools {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+}
+
+.tools-section {
+    flex: 1;
+    min-width: 200px;
 }
 
 .tools-section h4 {
@@ -1038,14 +1171,21 @@ body::before {
 }
 
 .color-option {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     cursor: pointer;
     border: 3px solid transparent;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     position: relative;
+}
+
+@media (min-width: 768px) {
+    .color-option {
+        width: 36px;
+        height: 36px;
+    }
 }
 
 .color-option:hover {
@@ -1111,10 +1251,11 @@ body::before {
 .tool-buttons {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .tool-btn {
-    padding: 14px;
+    padding: 12px;
     font-size: 1.2rem;
     min-width: auto;
     border: none;
@@ -1124,6 +1265,13 @@ body::before {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+@media (min-width: 768px) {
+    .tool-btn {
+        flex: none;
+    }
 }
 
 .tool-btn:hover {
@@ -1145,6 +1293,35 @@ body::before {
 
 .tool-btn.danger:hover {
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+}
+
+/* Option buttons selection */
+.option-btn {
+    background: rgba(52, 68, 84, 0.7);
+    color: var(--white);
+    border: 2px solid rgba(0, 153, 255, 0.3);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    min-width: 60px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.option-btn.selected {
+    background: var(--gradient-primary);
+    color: var(--white);
+    border-color: var(--goblin-green);
+    box-shadow: 0 6px 20px rgba(0, 204, 136, 0.3);
+    transform: translateY(-2px);
+}
+
+.option-btn:hover:not(.selected) {
+    border-color: var(--sea-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 153, 255, 0.2);
 }
 
 /* Start Game Animation */
@@ -1170,12 +1347,19 @@ body::before {
 .animation-content {
     text-align: center;
     color: var(--dark-slate);
+    padding: 2rem;
 }
 
 .animation-content h1 {
-    font-size: 4rem;
+    font-size: 2.5rem;
     margin-bottom: 2rem;
     animation: pulse 1s infinite;
+}
+
+@media (min-width: 768px) {
+    .animation-content h1 {
+        font-size: 4rem;
+    }
 }
 
 @keyframes pulse {
@@ -1184,19 +1368,31 @@ body::before {
 }
 
 .animation-content p {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .animation-content p {
+        font-size: 1.5rem;
+    }
 }
 
 .code-animation {
     font-family: 'Courier New', monospace;
-    font-size: 1.2rem;
+    font-size: 1rem;
     background: rgba(0, 0, 0, 0.2);
     padding: 1rem;
     border-radius: 10px;
     display: inline-block;
     margin-top: 2rem;
     color: var(--white);
+}
+
+@media (min-width: 768px) {
+    .code-animation {
+        font-size: 1.2rem;
+    }
 }
 
 /* Leaderboard Styles with Goblin Green & Sea Blue mixture */
@@ -1209,6 +1405,7 @@ body::before {
     justify-content: center;
     margin-bottom: 2rem;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -1257,6 +1454,7 @@ body::before {
     border-left: 4px solid var(--goblin-green);
     transition: all 0.3s ease;
     color: var(--white);
+    flex-wrap: wrap;
 }
 
 .leaderboard-item:hover {
@@ -1331,149 +1529,6 @@ body::before {
     border-radius: 50%;
     border-top-color: #fff;
     animation: spin 1s ease-in-out infinite;
-}
-
-/* Responsive design */
-@media (max-width: 1024px) {
-    .game-container {
-        flex-direction: column;
-    }
-    
-    .sidebar {
-        width: 100%;
-        height: 45%;
-        border-right: none;
-        border-bottom: 1px solid rgba(0, 153, 255, 0.2);
-        padding: 1.5rem;
-    }
-    
-    .room-info {
-        flex-direction: row;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1.5rem;
-    }
-    
-    .game-info {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-    
-    .players-container-wrapper {
-        max-height: 180px;
-    }
-    
-    .chat-messages {
-        max-height: 150px;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 2rem;
-        width: 95%;
-        margin: 1rem;
-    }
-    
-    h1 {
-        font-size: 2.2rem;
-    }
-    
-    .logo {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-    }
-    
-    .logo-icon {
-        margin-right: 0;
-    }
-    
-    .logo-text {
-        text-align: center;
-    }
-    
-    .settings-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .option-btn {
-        padding: 10px 16px;
-        font-size: 0.9rem;
-        min-width: 50px;
-    }
-    
-    .room-info {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .color-picker {
-        justify-content: center;
-    }
-    
-    .word-display {
-        width: 90%;
-        padding: 20px;
-    }
-    
-    .word {
-        font-size: 1.6rem;
-    }
-    
-    .view-word-btn {
-        padding: 12px 24px;
-        font-size: 0.95rem;
-    }
-    
-    .tools {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-    
-    .tools-section {
-        flex: 1;
-        min-width: 150px;
-    }
-    
-    .feature-list {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 1.5rem;
-    }
-    
-    h1 {
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-    }
-    
-    input[type="text"] {
-        padding: 14px 16px;
-    }
-    
-    button {
-        padding: 14px 20px;
-    }
-    
-    .option-btn {
-        padding: 8px 12px;
-        min-width: 45px;
-    }
-    
-    .sidebar {
-        padding: 1rem;
-    }
-    
-    .tools {
-        flex-direction: column;
-    }
 }
 
 /* Custom scrollbar */
