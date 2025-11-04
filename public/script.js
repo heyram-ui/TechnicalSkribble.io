@@ -231,8 +231,19 @@ document.addEventListener('DOMContentLoaded', () => {
         
         isDrawing = true;
         const rect = canvas.getBoundingClientRect();
-        lastX = e.clientX - rect.left;
-        lastY = e.clientY - rect.top;
+        
+        // Handle both mouse and touch events
+        let clientX, clientY;
+        if (e.type.includes('touch')) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        lastX = clientX - rect.left;
+        lastY = clientY - rect.top;
         
         // Save current state for undo
         try {
@@ -274,8 +285,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isDrawing || !isPlayerDrawing || isFillActive || !isCanvasInitialized) return;
         
         const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        
+        // Handle both mouse and touch events
+        let clientX, clientY;
+        if (e.type.includes('touch')) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
         
         // Draw smoothly with interpolation
         ctx.lineWidth = currentBrushSize;
@@ -290,9 +312,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof socket !== 'undefined' && socket) {
             socket.emit('drawing', {
                 x: x / canvas.width,
-                y: y / canvas.height,
+                y: y / canvas.width,
                 lastX: lastX / canvas.width,
-                lastY: lastY / canvas.height,
+                lastY: lastY / canvas.width,
                 color: isEraserActive ? 'white' : currentColor,
                 size: currentBrushSize,
                 type: 'draw'
