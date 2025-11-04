@@ -1,579 +1,857 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const path = require('path');
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const customizeScreen = document.getElementById('customize-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const leaderboardScreen = document.getElementById('leaderboard-screen');
+            const startAnimation = document.getElementById('start-animation');
+            const usernameInput = document.getElementById('username-input');
+            const roomIdInput = document.getElementById('room-id-input');
+            const createRoomBtn = document.getElementById('create-room-btn');
+            const joinRoomBtn = document.getElementById('join-room-btn');
+            const backBtn = document.getElementById('back-btn');
+            const startGameBtn = document.getElementById('start-game-btn');
+            const startGameBtnBottom = document.getElementById('start-game-btn-bottom');
+            const generatedRoomId = document.getElementById('generated-room-id');
+            const copyRoomCodeBtn = document.getElementById('copy-room-code');
+            const errorMessage = document.getElementById('error-message');
+            const playersContainer = document.getElementById('players-container');
+            const playersCount = document.querySelector('.players-count');
+            const chatMessages = document.getElementById('chat-messages');
+            const messageInput = document.getElementById('message-input');
+            const sendMessageBtn = document.getElementById('send-message-btn');
+            const roomIdDisplay = document.getElementById('room-id-display');
+            const timerDisplay = document.getElementById('timer');
+            const currentDrawer = document.getElementById('current-drawer');
+            const roundInfo = document.getElementById('round-info');
+            const clearCanvasBtn = document.getElementById('clear-canvas-btn');
+            const undoBtn = document.getElementById('undo-btn');
+            const eraserBtn = document.getElementById('eraser-btn');
+            const fillBtn = document.getElementById('fill-btn');
+            const canvas = document.getElementById('drawing-canvas');
+            const wordDisplay = document.getElementById('word-display');
+            const viewWordBtn = document.getElementById('view-word-btn');
+            const colorOptions = document.querySelectorAll('.color-option');
+            const brushSize = document.getElementById('brush-size');
+            const brushSizeValue = document.getElementById('brush-size-value');
+            const optionButtons = document.querySelectorAll('.option-btn');
+            const leaveRoomBtn = document.getElementById('leave-room-btn');
+            const languageSelect = document.getElementById('language-select');
+            const backToGameBtn = document.getElementById('back-to-game-btn');
+            const shareLeaderboardBtn = document.getElementById('share-leaderboard-btn');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const startMessage = document.getElementById('start-message');
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+            // Canvas context
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let currentColor = 'black';
+            let currentBrushSize = 5;
+            let isPlayerDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            let gameSettings = {};
+            let roomId = '';
+            let isRoomCreator = false;
+            let username = '';
+            let wordDisplayTimeout = null;
+            let drawingHistory = [];
+            let isEraserActive = false;
+            let isFillActive = false;
+            let isCanvasInitialized = false;
+            let selectedLanguage = 'en';
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Store game state
-const rooms = new Map();
-const users = new Map();
-
-// Enhanced technical questions with categories
-const technicalQuestions = [
-    // Programming Concepts
-    { question: 'The first node of a tree data structure is called', answer: 'root', category: 'Data Structures' },
-    { question: 'What keyword is used to define a constant variable in Java?', answer: 'final', category: 'Java' },
-    { question: 'Which data structure follows LIFO principle?', answer: 'stack', category: 'Data Structures' },
-    { question: 'What does API stand for in programming?', answer: 'Application Programming Interface', category: 'Programming' },
-    { question: 'Which loop is guaranteed to execute at least once in Java?', answer: 'do-while', category: 'Java' },
-    
-    // C++ Questions
-    { question: 'In C++, what operator is used for dynamic memory allocation?', answer: 'new', category: 'C++' },
-    { question: 'What is the extension for C++ header files?', answer: '.h', category: 'C++' },
-    { question: 'Which keyword is used for function templates in C++?', answer: 'template', category: 'C++' },
-    { question: 'What does STL stand for in C++?', answer: 'Standard Template Library', category: 'C++' },
-    { question: 'Which operator is used for scope resolution in C++?', answer: '::', category: 'C++' },
-    
-    // Java Questions
-    { question: 'What is the parent class of all Java classes?', answer: 'Object', category: 'Java' },
-    { question: 'Which keyword is used to implement inheritance in Java?', answer: 'extends', category: 'Java' },
-    { question: 'What is the default value of a boolean variable in Java?', answer: 'false', category: 'Java' },
-    { question: 'Which interface is used for collections that maintain order?', answer: 'List', category: 'Java' },
-    { question: 'What annotation is used to override a method in Java?', answer: '@Override', category: 'Java' },
-    
-    // Python Questions
-    { question: 'Which keyword is used to define a function in Python?', answer: 'def', category: 'Python' },
-    { question: 'What is used to create virtual environments in Python?', answer: 'venv', category: 'Python' },
-    { question: 'Which data type is used for immutable sequences in Python?', answer: 'tuple', category: 'Python' },
-    { question: 'What does PEP stand for in Python?', answer: 'Python Enhancement Proposal', category: 'Python' },
-    { question: 'Which operator is used for exponentiation in Python?', answer: '**', category: 'Python' },
-    
-    // Database Questions
-    { question: 'Which clause is used to filter records in SQL?', answer: 'WHERE', category: 'Database' },
-    { question: 'What is the keyword to remove duplicate rows in SQL?', answer: 'DISTINCT', category: 'Database' },
-    { question: 'Which join returns all records when there is a match in either table?', answer: 'FULL OUTER JOIN', category: 'Database' },
-    { question: 'What does DDL stand for in database management?', answer: 'Data Definition Language', category: 'Database' },
-    { question: 'Which constraint ensures all values in a column are unique?', answer: 'UNIQUE', category: 'Database' },
-    
-    // Computer Science
-    { question: 'The component that exhales heat from a computer is called', answer: 'cooler', category: 'Hardware' },
-    { question: 'What does CPU stand for?', answer: 'Central Processing Unit', category: 'Hardware' },
-    { question: 'Which type of memory is volatile?', answer: 'RAM', category: 'Hardware' },
-    { question: 'What connects the processor to the main memory?', answer: 'bus', category: 'Hardware' },
-    { question: 'Which port is commonly used for external hard drives?', answer: 'USB', category: 'Hardware' },
-    
-    // Web Development
-    { question: 'What does CSS stand for?', answer: 'Cascading Style Sheets', category: 'Web' },
-    { question: 'Which HTML tag is used for the largest heading?', answer: 'h1', category: 'Web' },
-    { question: 'What language runs in web browsers?', answer: 'JavaScript', category: 'Web' },
-    { question: 'Which method converts JSON string to object?', answer: 'JSON.parse', category: 'Web' },
-    { question: 'What does DOM stand for?', answer: 'Document Object Model', category: 'Web' }
-];
-
-// Generate a random room ID
-function generateRoomId() {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
-
-// Get a random question
-function getRandomQuestion() {
-    return technicalQuestions[Math.floor(Math.random() * technicalQuestions.length)];
-}
-
-// Calculate IQ based on score and performance
-function calculateIQ(score, totalRounds, correctGuesses, quickGuesses) {
-    const baseIQ = 90;
-    const scoreBonus = (score / totalRounds) * 10;
-    const accuracyBonus = (correctGuesses / totalRounds) * 15;
-    const speedBonus = (quickGuesses / totalRounds) * 5;
-    return Math.min(150, Math.floor(baseIQ + scoreBonus + accuracyBonus + speedBonus));
-}
-
-// Start a new round
-function startRound(roomId) {
-    const room = rooms.get(roomId);
-    if (!room) return;
-
-    room.gameState = 'playing';
-    room.currentRound++;
-
-    // Clear any existing timer
-    if (room.timerInterval) {
-        clearInterval(room.timerInterval);
-    }
-
-    // Clear canvas
-    room.drawings = [];
-    io.to(roomId).emit('clear-canvas');
-
-    // Select next drawer (round-robin)
-    room.drawerIndex = (room.drawerIndex + 1) % room.players.length;
-    room.players.forEach((player, index) => {
-        player.isDrawing = index === room.drawerIndex;
-        if (player.isDrawing) {
-            player.roundsDrawn = (player.roundsDrawn || 0) + 1;
-        }
-    });
-
-    // Get a random question
-    const questionData = getRandomQuestion();
-    room.currentQuestion = questionData.question;
-    room.currentAnswer = questionData.answer.toLowerCase();
-    room.currentCategory = questionData.category;
-
-    // Reset guess tracking
-    room.correctGuessers = new Set();
-
-    // Notify the drawer of the question and answer
-    const drawer = room.players[room.drawerIndex];
-    if (drawer) {
-        io.to(drawer.id).emit('your-turn', { 
-            question: room.currentQuestion, 
-            answer: room.currentAnswer,
-            category: room.currentCategory
-        });
-    }
-
-    // Notify other players of the question only (no answer)
-    room.players.forEach(player => {
-        if (player.id !== drawer.id) {
-            io.to(player.id).emit('question-hint', {
-                question: room.currentQuestion,
-                category: room.currentCategory
-            });
-        }
-    });
-
-    // Start the round timer
-    room.currentTime = room.roundTime;
-
-    room.timerInterval = setInterval(() => {
-        room.currentTime--;
-
-        io.to(roomId).emit('update-timer', room.currentTime);
-
-        if (room.currentTime <= 0) {
-            clearInterval(room.timerInterval);
-            nextRound(roomId);
-        }
-    }, 1000);
-
-    io.to(roomId).emit('game-started', {
-        drawer: drawer.username,
-        time: room.roundTime,
-        currentRound: room.currentRound,
-        totalRounds: room.rounds
-    });
-
-    io.to(roomId).emit('update-players', room.players);
-}
-
-// Move to next round or end game
-function nextRound(roomId) {
-    const room = rooms.get(roomId);
-    if (!room) return;
-
-    room.gameState = 'waiting';
-
-    // Clear timer
-    if (room.timerInterval) {
-        clearInterval(room.timerInterval);
-        room.timerInterval = null;
-    }
-
-    // Announce the correct answer to everyone
-    io.to(roomId).emit('round-ended', {
-        answer: room.currentAnswer,
-        category: room.currentCategory
-    });
-
-    // Check if game should end
-    if (room.currentRound >= room.rounds) {
-        // Game ended, calculate final scores and IQs
-        const leaderboard = room.players.map(player => {
-            const iq = calculateIQ(
-                player.score, 
-                room.rounds, 
-                player.correctGuesses || 0,
-                player.quickGuesses || 0
-            );
-            return {
-                ...player,
-                iq: iq
+            // Language translations
+            const translations = {
+                en: {
+                    welcome: "Draw and guess technical terms with friends! 🎨🚀",
+                    usernamePlaceholder: "Enter your username",
+                    roomCodePlaceholder: "Enter room code",
+                    createRoom: "Create Room",
+                    joinRoom: "Join Room",
+                    roomSettings: "Room Settings",
+                    startGame: "Start Game",
+                    back: "Back",
+                    drawing: "Drawing: ",
+                    round: "Round: ",
+                    typeGuess: "Type your guess...",
+                    viewWord: "View Word",
+                    colors: "Colors",
+                    brushSize: "Brush Size",
+                    tools: "Tools",
+                    undo: "Undo",
+                    eraser: "Eraser",
+                    fill: "Fill",
+                    clearCanvas: "Clear Canvas",
+                    leaderboard: "Leaderboard",
+                    global: "Global",
+                    friends: "Friends",
+                    today: "Today",
+                    shareResults: "Share Results",
+                    backToGame: "Back to Game",
+                    startingGame: "Starting game... Please wait!"
+                },
+                ml: {
+                    welcome: "സുഹൃത്തുക്കളുമായി സാങ്കേതിക പദങ്ങൾ വരച്ച് ഊഹിക്കുക! 🎨🚀",
+                    usernamePlaceholder: "നിങ്ങളുടെ ഉപയോക്തൃനാമം നൽകുക",
+                    roomCodePlaceholder: "റൂം കോഡ് നൽകുക",
+                    createRoom: "റൂം സൃഷ്ടിക്കുക",
+                    joinRoom: "റൂമിൽ ചേരുക",
+                    roomSettings: "റൂം ക്രമീകരണങ്ങൾ",
+                    startGame: "ഗെയിം ആരംഭിക്കുക",
+                    back: "പിന്നിലേക്ക്",
+                    drawing: "വരയ്ക്കുന്നത്: ",
+                    round: "റൗണ്ട്: ",
+                    typeGuess: "നിങ്ങളുടെ ഊഹം ടൈപ്പ് ചെയ്യുക...",
+                    viewWord: "വാക്ക് കാണുക",
+                    colors: "നിറങ്ങൾ",
+                    brushSize: "ബ്രഷ് വലുപ്പം",
+                    tools: "ഉപകരണങ്ങൾ",
+                    undo: "റദ്ദാക്കുക",
+                    eraser: "ഇറേസർ",
+                    fill: "നിറക്കുക",
+                    clearCanvas: "കാൻവാസ് വൃത്തിയാക്കുക",
+                    leaderboard: "ലീഡർബോർഡ്",
+                    global: "ആഗോള",
+                    friends: "സുഹൃത്തുക്കൾ",
+                    today: "ഇന്ന്",
+                    shareResults: "ഫലങ്ങൾ പങ്കിടുക",
+                    backToGame: "ഗെയിമിലേക്ക് മടങ്ങുക",
+                    startingGame: "ഗെയിം ആരംഭിക്കുന്നു... ദയവായി കാത്തിരിക്കുക!"
+                }
+                // Add other languages as needed...
             };
-        }).sort((a, b) => b.score - a.score);
 
-        const winner = leaderboard[0];
-        
-        io.to(roomId).emit('game-ended', {
-            winner: winner,
-            leaderboard: leaderboard
-        });
-        
-        // Reset game state but keep room
-        room.gameState = 'waiting';
-        room.currentRound = 0;
-        room.drawings = [];
-    } else {
-        // Automatically start the next round after a short delay
-        setTimeout(() => {
-            startRound(roomId);
-        }, 5000);
-    }
-}
-
-io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
-    
-    // Handle creating a new room
-    socket.on('create-room', (username) => {
-        if (!username || username.trim() === '') {
-            socket.emit('join-error', 'Username is required');
-            return;
-        }
-
-        const roomId = generateRoomId();
-        socket.join(roomId);
-        
-        // Initialize room state
-        rooms.set(roomId, {
-            players: [{ 
-                id: socket.id, 
-                username: username.trim(), 
-                score: 0, 
-                isDrawing: false,
-                correctGuesses: 0,
-                quickGuesses: 0,
-                roundsDrawn: 0
-            }],
-            currentQuestion: '',
-            currentAnswer: '',
-            currentCategory: '',
-            drawerIndex: -1,
-            roundTime: 120,
-            currentTime: 120,
-            gameState: 'waiting',
-            drawings: [],
-            timerInterval: null,
-            rounds: 3,
-            currentRound: 0,
-            maxPlayers: 4,
-            correctGuessers: new Set()
-        });
-        
-        users.set(socket.id, { roomId, username: username.trim(), isCreator: true });
-        
-        socket.emit('room-created', roomId);
-        io.to(roomId).emit('update-players', rooms.get(roomId).players);
-    });
-    
-    // Handle joining a room
-    socket.on('join-room', (data) => {
-        if (!data || !data.roomId || !data.username) {
-            socket.emit('join-error', 'Room ID and username are required');
-            return;
-        }
-
-        const { roomId, username } = data;
-        const room = rooms.get(roomId);
-        
-        if (!room) {
-            socket.emit('join-error', 'Room not found');
-            return;
-        }
-        
-        if (room.players.length >= room.maxPlayers) {
-            socket.emit('join-error', 'Room is full');
-            return;
-        }
-
-        if (room.gameState === 'playing') {
-            socket.emit('join-error', 'Game is already in progress');
-            return;
-        }
-        
-        socket.join(roomId);
-        
-        // Add player to room
-        room.players.push({ 
-            id: socket.id, 
-            username: username.trim(), 
-            score: 0, 
-            isDrawing: false,
-            correctGuesses: 0,
-            quickGuesses: 0,
-            roundsDrawn: 0
-        });
-        users.set(socket.id, { roomId, username: username.trim(), isCreator: false });
-        
-        socket.emit('room-joined', {
-            players: room.players,
-            gameState: room.gameState,
-            roomId: roomId
-        });
-        
-        io.to(roomId).emit('update-players', room.players);
-        io.to(roomId).emit('user-joined', username.trim());
-    });
-    
-    // Handle drawing data
-    socket.on('drawing', (data) => {
-        const user = users.get(socket.id);
-        if (!user) return;
-        
-        const room = rooms.get(user.roomId);
-        if (!room || room.gameState !== 'playing') return;
-
-        const player = room.players.find(p => p.id === socket.id);
-        if (!player || !player.isDrawing) return;
-        
-        room.drawings.push(data);
-        socket.to(user.roomId).emit('drawing', data);
-    });
-    
-    // Handle fill canvas
-    socket.on('fill-canvas', (data) => {
-        const user = users.get(socket.id);
-        if (!user) return;
-        
-        const room = rooms.get(user.roomId);
-        if (!room || room.gameState !== 'playing') return;
-
-        const player = room.players.find(p => p.id === socket.id);
-        if (!player || !player.isDrawing) return;
-        
-        io.to(user.roomId).emit('fill-canvas', data);
-    });
-    
-    // Handle clear canvas
-    socket.on('clear-canvas', () => {
-        const user = users.get(socket.id);
-        if (!user) return;
-        
-        const room = rooms.get(user.roomId);
-        if (!room || room.gameState !== 'playing') return;
-
-        const player = room.players.find(p => p.id === socket.id);
-        if (!player || !player.isDrawing) return;
-        
-        room.drawings = [];
-        io.to(user.roomId).emit('clear-canvas');
-    });
-    
-    // Handle undo
-    socket.on('undo', () => {
-        const user = users.get(socket.id);
-        if (!user) return;
-        
-        const room = rooms.get(user.roomId);
-        if (!room || room.gameState !== 'playing') return;
-
-        const player = room.players.find(p => p.id === socket.id);
-        if (!player || !player.isDrawing) return;
-        
-        if (room.drawings.length > 0) {
-            room.drawings.pop();
-        }
-        
-        socket.to(user.roomId).emit('undo');
-    });
-    
-    // Handle chat messages
-    socket.on('send-message', (message) => {
-        const user = users.get(socket.id);
-        if (!user) return;
-        
-        const room = rooms.get(user.roomId);
-        if (!room || room.gameState !== 'playing') return;
-
-        const player = room.players.find(p => p.id === socket.id);
-        if (player && player.isDrawing) {
-            socket.emit('receive-message', {
-                username: 'System',
-                message: 'You cannot guess while drawing',
-                isSystem: true
-            });
-            return;
-        }
-        
-        // Check if message is the correct answer
-        const isCorrect = message.toLowerCase().trim() === room.currentAnswer.toLowerCase();
-        
-        if (isCorrect) {
-            // Check if player already guessed correctly
-            if (room.correctGuessers.has(socket.id)) {
-                socket.emit('receive-message', {
-                    username: 'System',
-                    message: 'You already guessed correctly!',
-                    isSystem: true
-                });
-                return;
-            }
-
-            // Award points
-            const guessingPlayer = room.players.find(p => p.id === socket.id);
-            if (guessingPlayer && !guessingPlayer.isDrawing) {
-                // Calculate points based on time remaining
-                const timeBonus = Math.floor(room.currentTime / 10);
-                const points = 10 + timeBonus;
-                guessingPlayer.score += points;
-                guessingPlayer.correctGuesses = (guessingPlayer.correctGuesses || 0) + 1;
-                
-                // Track quick guesses (within first 30 seconds)
-                if (room.currentTime > room.roundTime - 30) {
-                    guessingPlayer.quickGuesses = (guessingPlayer.quickGuesses || 0) + 1;
-                }
-                
-                // Add to correct guessers
-                room.correctGuessers.add(socket.id);
-                
-                // Notify all players
-                io.to(user.roomId).emit('correct-guess', {
-                    username: user.username,
-                    score: points,
-                    timeRemaining: room.currentTime
-                });
-                
-                io.to(user.roomId).emit('update-players', room.players);
-                
-                // Check if all players guessed correctly
-                const remainingPlayers = room.players.filter(p => 
-                    !p.isDrawing && !room.correctGuessers.has(p.id)
-                );
-                
-                if (remainingPlayers.length === 0) {
-                    // All players guessed correctly, end round early
-                    clearInterval(room.timerInterval);
-                    nextRound(user.roomId);
+            // Show start message function
+            function showStartMessage() {
+                if (startMessage) {
+                    const messageText = startMessage.querySelector('span');
+                    if (messageText) {
+                        messageText.textContent = translations[selectedLanguage].startingGame;
+                    }
+                    startMessage.classList.remove('hidden');
                 }
             }
-        } else {
-            // Broadcast the message with incorrect flag
-            io.to(user.roomId).emit('receive-message', {
-                username: user.username,
-                message: message,
-                isCorrect: false,
-                isIncorrect: true
-            });
-        }
-    });
-    
-    // Handle view word request
-    socket.on('view-word', () => {
-        const user = users.get(socket.id);
-        if (!user) return;
-        
-        const room = rooms.get(user.roomId);
-        if (!room) return;
-        
-        const player = room.players.find(p => p.id === socket.id);
-        if (player) {
-            socket.emit('view-word', {
-                question: room.currentQuestion,
-                answer: player.isDrawing ? room.currentAnswer : '',
-                category: room.currentCategory
-            });
-        }
-    });
-    
-    // Handle start game
-    socket.on('start-game', (settings) => {
-        const user = users.get(socket.id);
-        if (!user) return;
-        
-        const room = rooms.get(user.roomId);
-        if (!room) return;
-        
-        if (!user.isCreator) {
-            socket.emit('join-error', 'Only the room creator can start the game');
-            return;
-        }
 
-        if (room.players.length < 2) {
-            socket.emit('join-error', 'Need at least 2 players to start the game');
-            return;
-        }
-        
-        // Validate settings
-        if (settings.players < 2 || settings.players > 10) {
-            socket.emit('join-error', 'Players must be between 2 and 10');
-            return;
-        }
-        
-        if (settings.drawTime < 30 || settings.drawTime > 300) {
-            socket.emit('join-error', 'Draw time must be between 30 seconds and 5 minutes');
-            return;
-        }
-        
-        if (settings.rounds < 1 || settings.rounds > 10) {
-            socket.emit('join-error', 'Rounds must be between 1 and 10');
-            return;
-        }
-        
-        // Update room settings
-        room.roundTime = settings.drawTime;
-        room.rounds = settings.rounds;
-        room.maxPlayers = settings.players;
-        room.currentRound = 0;
-        
-        // Reset all player scores and stats
-        room.players.forEach(player => {
-            player.score = 0;
-            player.isDrawing = false;
-            player.correctGuesses = 0;
-            player.quickGuesses = 0;
-            player.roundsDrawn = 0;
-        });
-        
-        startRound(user.roomId);
-    });
+            // Hide start message function
+            function hideStartMessage() {
+                if (startMessage) {
+                    startMessage.classList.add('hidden');
+                }
+            }
 
-    // Handle disconnection
-    socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
-        
-        const user = users.get(socket.id);
-        if (!user) return;
-        
-        const room = rooms.get(user.roomId);
-        if (room) {
-            if (room.timerInterval) {
-                clearInterval(room.timerInterval);
-                room.timerInterval = null;
+            // Update UI based on selected language
+            function updateLanguage() {
+                selectedLanguage = languageSelect.value;
+                const t = translations[selectedLanguage];
+                
+                document.querySelector('.subtitle').textContent = t.welcome;
+                document.getElementById('username-input').placeholder = t.usernamePlaceholder;
+                document.getElementById('room-id-input').placeholder = t.roomCodePlaceholder;
+                document.getElementById('create-room-btn').innerHTML = `<i class="fas fa-plus-circle"></i> ${t.createRoom}`;
+                document.getElementById('join-room-btn').innerHTML = `<i class="fas fa-sign-in-alt"></i> ${t.joinRoom}`;
+                document.querySelector('#customize-screen h1').textContent = t.roomSettings;
+                document.getElementById('start-game-btn').innerHTML = `<i class="fas fa-play"></i> ${t.startGame}`;
+                document.getElementById('back-btn').innerHTML = `<i class="fas fa-arrow-left"></i> ${t.back}`;
+                
+                if (messageInput) {
+                    messageInput.placeholder = isPlayerDrawing ? 
+                        "You're drawing! Others are guessing..." : t.typeGuess;
+                }
+                
+                if (viewWordBtn) {
+                    viewWordBtn.innerHTML = `<i class="fas fa-eye"></i> ${t.viewWord}`;
+                }
+                
+                document.querySelectorAll('.tools-section h4')[0].textContent = t.colors;
+                document.querySelectorAll('.tools-section h4')[1].textContent = t.brushSize;
+                document.querySelectorAll('.tools-section h4')[2].textContent = t.tools;
+                document.getElementById('undo-btn').title = t.undo;
+                document.getElementById('eraser-btn').title = t.eraser;
+                document.getElementById('fill-btn').title = t.fill;
+                document.getElementById('clear-canvas-btn').title = t.clearCanvas;
+                
+                document.querySelector('#leaderboard-screen h1').innerHTML = `<i class="fas fa-trophy"></i> ${t.leaderboard}`;
+                document.querySelectorAll('.tab-btn')[0].textContent = t.global;
+                document.querySelectorAll('.tab-btn')[1].textContent = t.friends;
+                document.querySelectorAll('.tab-btn')[2].textContent = t.today;
+                document.getElementById('share-leaderboard-btn').innerHTML = `<i class="fas fa-share"></i> ${t.shareResults}`;
+                document.getElementById('back-to-game-btn').innerHTML = `<i class="fas fa-arrow-left"></i> ${t.backToGame}`;
+            }
+
+            // Set canvas size
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                
+                // Set canvas styles for smooth drawing
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+                ctx.lineWidth = currentBrushSize;
+                ctx.strokeStyle = currentColor;
+                
+                isCanvasInitialized = true;
             }
             
-            const playerIndex = room.players.findIndex(player => player.id === socket.id);
-            if (playerIndex !== -1) {
-                const disconnectedPlayer = room.players[playerIndex];
-                room.players.splice(playerIndex, 1);
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Initialize canvas only when game screen is shown
+            function initializeCanvas() {
+                if (gameScreen.classList.contains('hidden')) return;
+                resizeCanvas();
+            }
+
+            // Set up drawing event listeners
+            function setupCanvasEvents() {
+                canvas.addEventListener('mousedown', startDrawing);
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('mouseup', stopDrawing);
+                canvas.addEventListener('mouseout', stopDrawing);
                 
-                io.to(user.roomId).emit('user-left', disconnectedPlayer.username);
+                // Touch events for mobile
+                canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+                canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+                canvas.addEventListener('touchend', handleTouchEnd);
+            }
+            
+            function removeCanvasEvents() {
+                canvas.removeEventListener('mousedown', startDrawing);
+                canvas.removeEventListener('mousemove', draw);
+                canvas.removeEventListener('mouseup', stopDrawing);
+                canvas.removeEventListener('mouseout', stopDrawing);
                 
-                if (room.players.length === 0) {
-                    rooms.delete(user.roomId);
+                canvas.removeEventListener('touchstart', handleTouchStart);
+                canvas.removeEventListener('touchmove', handleTouchMove);
+                canvas.removeEventListener('touchend', handleTouchEnd);
+            }
+            
+            function startDrawing(e) {
+                if (!isPlayerDrawing || !isCanvasInitialized) return;
+                
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                
+                // Handle both mouse and touch events
+                let clientX, clientY;
+                if (e.type.includes('touch')) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
                 } else {
-                    if (room.gameState === 'playing' && disconnectedPlayer.isDrawing) {
-                        clearInterval(room.timerInterval);
-                        nextRound(user.roomId);
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                
+                lastX = clientX - rect.left;
+                lastY = clientY - rect.top;
+                
+                // Save current state for undo
+                try {
+                    drawingHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                    if (drawingHistory.length > 50) drawingHistory.shift(); // Limit history size
+                } catch (error) {
+                    console.error('Error saving canvas state:', error);
+                }
+                
+                // Handle fill tool
+                if (isFillActive) {
+                    ctx.fillStyle = isEraserActive ? 'white' : currentColor;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Send fill action to server
+                    if (typeof socket !== 'undefined' && socket) {
+                        socket.emit('fill-canvas', {
+                            color: isEraserActive ? 'white' : currentColor
+                        });
                     }
                     
-                    if (user.isCreator) {
-                        const newCreator = room.players[0];
-                        if (newCreator) {
-                            const newCreatorUser = users.get(newCreator.id);
-                            if (newCreatorUser) {
-                                newCreatorUser.isCreator = true;
-                            }
-                        }
-                    }
-                    
-                    io.to(user.roomId).emit('update-players', room.players);
+                    isDrawing = false;
+                    return;
+                }
+                
+                // Send drawing start signal
+                if (typeof socket !== 'undefined' && socket) {
+                    socket.emit('drawing', {
+                        x: lastX / canvas.width,
+                        y: lastY / canvas.height,
+                        color: isEraserActive ? 'white' : currentColor,
+                        size: currentBrushSize,
+                        type: 'start'
+                    });
                 }
             }
-        }
-        
-        users.delete(socket.id);
-    });
-});
+            
+            function draw(e) {
+                if (!isDrawing || !isPlayerDrawing || isFillActive || !isCanvasInitialized) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                
+                // Handle both mouse and touch events
+                let clientX, clientY;
+                if (e.type.includes('touch')) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                
+                const x = clientX - rect.left;
+                const y = clientY - rect.top;
+                
+                // Draw smoothly with interpolation
+                ctx.lineWidth = currentBrushSize;
+                ctx.strokeStyle = isEraserActive ? 'white' : currentColor;
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                
+                // Send drawing data to server
+                if (typeof socket !== 'undefined' && socket) {
+                    socket.emit('drawing', {
+                        x: x / canvas.width,
+                        y: y / canvas.width,
+                        lastX: lastX / canvas.width,
+                        lastY: lastY / canvas.width,
+                        color: isEraserActive ? 'white' : currentColor,
+                        size: currentBrushSize,
+                        type: 'draw'
+                    });
+                }
+                
+                lastX = x;
+                lastY = y;
+            }
+            
+            function stopDrawing() {
+                if (!isPlayerDrawing) return;
+                
+                isDrawing = false;
+                
+                // Send drawing end signal
+                if (typeof socket !== 'undefined' && socket) {
+                    socket.emit('drawing', { type: 'end' });
+                }
+            }
+            
+            function handleTouchStart(e) {
+                e.preventDefault();
+                if (!isPlayerDrawing) return;
+                
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+            
+            function handleTouchMove(e) {
+                e.preventDefault();
+                if (!isPlayerDrawing) return;
+                
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+            
+            function handleTouchEnd(e) {
+                e.preventDefault();
+                if (!isPlayerDrawing) return;
+                
+                const mouseEvent = new MouseEvent('mouseup');
+                canvas.dispatchEvent(mouseEvent);
+            }
 
-// Start server
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+            // Color and brush size selection
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    currentColor = option.getAttribute('data-color');
+                    colorOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    ctx.strokeStyle = currentColor;
+                    
+                    // Deactivate eraser and fill when selecting a color
+                    isEraserActive = false;
+                    isFillActive = false;
+                    eraserBtn.classList.remove('active');
+                    fillBtn.classList.remove('active');
+                });
+            });
+            
+            if (brushSize && brushSizeValue) {
+                brushSize.addEventListener('input', () => {
+                    currentBrushSize = parseInt(brushSize.value);
+                    brushSizeValue.textContent = currentBrushSize + 'px';
+                    ctx.lineWidth = currentBrushSize;
+                });
+            }
+
+            // Tool buttons
+            if (undoBtn) {
+                undoBtn.addEventListener('click', () => {
+                    if (drawingHistory.length > 0 && isCanvasInitialized) {
+                        try {
+                            ctx.putImageData(drawingHistory.pop(), 0, 0);
+                            if (typeof socket !== 'undefined' && socket) {
+                                socket.emit('undo');
+                            }
+                        } catch (error) {
+                            console.error('Error undoing:', error);
+                        }
+                    }
+                });
+            }
+            
+            if (eraserBtn) {
+                eraserBtn.addEventListener('click', () => {
+                    isEraserActive = !isEraserActive;
+                    isFillActive = false;
+                    if (fillBtn) fillBtn.classList.remove('active');
+                    eraserBtn.classList.toggle('active', isEraserActive);
+                });
+            }
+            
+            if (fillBtn) {
+                fillBtn.addEventListener('click', () => {
+                    isFillActive = !isFillActive;
+                    isEraserActive = false;
+                    if (eraserBtn) eraserBtn.classList.remove('active');
+                    fillBtn.classList.toggle('active', isFillActive);
+                });
+            }
+
+            // Option buttons selection
+            optionButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const group = btn.parentElement;
+                    group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                });
+            });
+
+            // Clear canvas button
+            if (clearCanvasBtn) {
+                clearCanvasBtn.addEventListener('click', () => {
+                    if (!isCanvasInitialized) return;
+                    
+                    try {
+                        drawingHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                        if (drawingHistory.length > 50) drawingHistory.shift();
+                        
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        if (typeof socket !== 'undefined' && socket) {
+                            socket.emit('clear-canvas');
+                        }
+                    } catch (error) {
+                        console.error('Error clearing canvas:', error);
+                    }
+                });
+            }
+
+            // Copy room code button
+            if (copyRoomCodeBtn && generatedRoomId) {
+                copyRoomCodeBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(generatedRoomId.textContent).then(() => {
+                        // Show copied feedback
+                        const originalTitle = copyRoomCodeBtn.getAttribute('title');
+                        copyRoomCodeBtn.setAttribute('title', 'Copied!');
+                        copyRoomCodeBtn.innerHTML = '<i class="fas fa-check"></i>';
+                        
+                        setTimeout(() => {
+                            copyRoomCodeBtn.setAttribute('title', originalTitle || 'Copy room code');
+                            copyRoomCodeBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy room code: ', err);
+                    });
+                });
+            }
+
+            // Create room button
+            if (createRoomBtn) {
+                createRoomBtn.addEventListener('click', () => {
+                    username = usernameInput ? usernameInput.value.trim() : '';
+                    if (username) {
+                        if (welcomeScreen) welcomeScreen.classList.add('hidden');
+                        if (customizeScreen) customizeScreen.classList.remove('hidden');
+                        isRoomCreator = true;
+                        
+                        // Create room with the username
+                        if (typeof socket !== 'undefined' && socket) {
+                            socket.emit('create-room', username);
+                        }
+                    } else {
+                        showError('Please enter a username');
+                    }
+                });
+            }
+
+            // Back button from customize screen
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    if (customizeScreen) customizeScreen.classList.add('hidden');
+                    if (welcomeScreen) welcomeScreen.classList.remove('hidden');
+                    isRoomCreator = false;
+                });
+            }
+
+            // Start game button with animation and message
+            if (startGameBtn) {
+                startGameBtn.addEventListener('click', () => {
+                    // Collect game settings
+                    const playersElement = document.querySelector('.setting-group:nth-child(1) .option-btn.selected');
+                    const drawTimeElement = document.querySelector('.setting-group:nth-child(2) .option-btn.selected');
+                    const roundsElement = document.querySelector('.setting-group:nth-child(3) .option-btn.selected');
+                    
+                    if (!playersElement || !drawTimeElement || !roundsElement) {
+                        showError('Please select all game settings');
+                        return;
+                    }
+                    
+                    const players = parseInt(playersElement.getAttribute('data-value'));
+                    const drawTime = parseInt(drawTimeElement.getAttribute('data-value'));
+                    const rounds = parseInt(roundsElement.getAttribute('data-value'));
+                    
+                    // Validate settings
+                    if (players < 2 || players > 10) {
+                        showError('Players must be between 2 and 10');
+                        return;
+                    }
+                    
+                    if (drawTime < 120 || drawTime > 420) {
+                        showError('Draw time must be between 2 and 7 minutes');
+                        return;
+                    }
+                    
+                    if (rounds < 2 || rounds > 6) {
+                        showError('Rounds must be between 2 and 6');
+                        return;
+                    }
+                    
+                    gameSettings = {
+                        players,
+                        drawTime,
+                        rounds
+                    };
+
+                    // Show start message
+                    showStartMessage();
+
+                    // Show start animation after a short delay
+                    setTimeout(() => {
+                        startAnimation.classList.remove('hidden');
+                        
+                        // After animation, proceed to game and hide message
+                        setTimeout(() => {
+                            startAnimation.classList.add('hidden');
+                            hideStartMessage(); // Remove the message when game starts
+                            
+                            // The room was already created, now we just need to proceed to the game screen
+                            if (customizeScreen) customizeScreen.classList.add('hidden');
+                            if (gameScreen) gameScreen.classList.remove('hidden');
+                            if (roomIdDisplay) roomIdDisplay.textContent = 'Room: ' + roomId;
+                            
+                            // Initialize canvas now that game screen is visible
+                            initializeCanvas();
+                            
+                            // Show start button only for the room creator
+                            if (startGameBtnBottom) {
+                                startGameBtnBottom.classList.toggle('hidden', !isRoomCreator);
+                            }
+                            
+                            // Start the game
+                            if (typeof socket !== 'undefined' && socket) {
+                                socket.emit('start-game', gameSettings);
+                            }
+                        }, 3000);
+                    }, 1500);
+                });
+            }
+
+            // Start game button (bottom) - with message functionality
+            if (startGameBtnBottom) {
+                startGameBtnBottom.addEventListener('click', () => {
+                    // Show start message
+                    showStartMessage();
+                    
+                    // Start game after a short delay to show the message
+                    setTimeout(() => {
+                        hideStartMessage(); // Remove message when game starts
+                        if (typeof socket !== 'undefined' && socket) {
+                            socket.emit('start-game', gameSettings);
+                        }
+                    }, 2000);
+                });
+            }
+
+            // Join room button
+            if (joinRoomBtn) {
+                joinRoomBtn.addEventListener('click', () => {
+                    username = usernameInput ? usernameInput.value.trim() : '';
+                    const roomIdToJoin = roomIdInput ? roomIdInput.value.trim().toUpperCase() : '';
+                    
+                    if (username && roomIdToJoin) {
+                        if (typeof socket !== 'undefined' && socket) {
+                            socket.emit('join-room', { roomId: roomIdToJoin, username });
+                        }
+                    } else {
+                        showError('Please enter both username and room ID');
+                    }
+                });
+            }
+
+            // Leave room button
+            if (leaveRoomBtn) {
+                leaveRoomBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to leave the room?')) {
+                        if (typeof socket !== 'undefined' && socket) {
+                            socket.disconnect();
+                            socket.connect();
+                        }
+                        if (gameScreen) gameScreen.classList.add('hidden');
+                        if (welcomeScreen) welcomeScreen.classList.remove('hidden');
+                    }
+                });
+            }
+
+            // Send message button
+            if (sendMessageBtn) {
+                sendMessageBtn.addEventListener('click', sendMessage);
+            }
+            if (messageInput) {
+                messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
+
+            function sendMessage() {
+                const message = messageInput ? messageInput.value.trim() : '';
+                if (message && typeof socket !== 'undefined' && socket) {
+                    socket.emit('send-message', message);
+                    if (messageInput) messageInput.value = '';
+                }
+            }
+
+            // View word button - Show word for 5 minutes
+            if (viewWordBtn) {
+                viewWordBtn.addEventListener('click', () => {
+                    if (typeof socket !== 'undefined' && socket) {
+                        socket.emit('view-word');
+                        // Show loading state
+                        viewWordBtn.innerHTML = '<i class="fas fa-spinner loading"></i> Loading...';
+                        setTimeout(() => {
+                            viewWordBtn.innerHTML = '<i class="fas fa-eye"></i> ' + translations[selectedLanguage].viewWord;
+                        }, 1000);
+                    }
+                });
+            }
+
+            // Language selector
+            if (languageSelect) {
+                languageSelect.addEventListener('change', updateLanguage);
+            }
+
+            // Tab buttons for leaderboard
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Show corresponding leaderboard
+                    document.querySelectorAll('.leaderboard-list').forEach(list => {
+                        list.classList.remove('active');
+                    });
+                    document.getElementById(tab + '-leaderboard').classList.add('active');
+                });
+            });
+
+            // Back to game from leaderboard
+            if (backToGameBtn) {
+                backToGameBtn.addEventListener('click', () => {
+                    leaderboardScreen.classList.add('hidden');
+                    gameScreen.classList.remove('hidden');
+                });
+            }
+
+            // Share leaderboard
+            if (shareLeaderboardBtn) {
+                shareLeaderboardBtn.addEventListener('click', () => {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'Technical Skribbl.io Leaderboard',
+                            text: 'Check out my score on Technical Skribbl.io!',
+                            url: window.location.href
+                        }).catch(err => {
+                            console.error('Error sharing:', err);
+                        });
+                    } else {
+                        // Fallback: copy to clipboard
+                        navigator.clipboard.writeText(window.location.href).then(() => {
+                            alert('Link copied to clipboard!');
+                        });
+                    }
+                });
+            }
+
+            // Initialize socket connection
+            let socket;
+            try {
+                // For demo purposes, we'll simulate socket behavior
+                // In a real implementation, this would connect to your server
+                socket = {
+                    emit: function(event, data) {
+                        console.log('Socket emit:', event, data);
+                        // Simulate server responses for demo
+                        if (event === 'create-room') {
+                            setTimeout(() => {
+                                if (typeof this.on === 'function') {
+                                    this.on('room-created', { roomId: 'DEMO12' });
+                                }
+                            }, 500);
+                        }
+                    },
+                    on: function(event, callback) {
+                        console.log('Socket on:', event);
+                        // Store callback for simulated responses
+                        this['_' + event] = callback;
+                    },
+                    disconnect: function() {
+                        console.log('Socket disconnected');
+                    },
+                    connect: function() {
+                        console.log('Socket connected');
+                    }
+                };
+            } catch (error) {
+                console.error('Socket.io initialization failed:', error);
+                showError('Connection error. Please refresh the page.');
+            }
+
+            // Socket event handlers
+            if (typeof socket !== 'undefined' && socket) {
+                // Simulate room creation for demo
+                setTimeout(() => {
+                    if (socket._roomCreated) {
+                        socket._roomCreated('DEMO12');
+                    }
+                }, 500);
+
+                // Helper functions
+                function showError(message) {
+                    if (errorMessage) {
+                        errorMessage.textContent = message;
+                        setTimeout(() => {
+                            errorMessage.textContent = '';
+                        }, 5000);
+                    }
+                }
+
+                function updatePlayersList(players) {
+                    if (!playersContainer || !playersCount) return;
+                    
+                    playersContainer.innerHTML = '';
+                    playersCount.textContent = players.length + '/' + (gameSettings.players || 4);
+                    
+                    players.forEach((player, index) => {
+                        const li = document.createElement('li');
+                        if (player.isDrawing) {
+                            li.classList.add('drawing');
+                        }
+                        
+                        const iqDisplay = player.iq ? `<span class="iq-score">IQ: ${player.iq}</span>` : '';
+                        
+                        li.innerHTML = `
+                            <div class="player-info">
+                                <span class="player-name">${player.username} ${player.id === socket.id ? '(You)' : ''}</span>
+                                ${player.isDrawing ? '<i class="fas fa-paint-brush drawing-icon"></i>' : ''}
+                            </div>
+                            <div class="player-stats">
+                                <span class="score">${player.score}</span>
+                                ${iqDisplay}
+                            </div>
+                        `;
+                        playersContainer.appendChild(li);
+                    });
+                }
+
+                function addChatMessage(username, message, isCorrect = false, isIncorrect = false, isSystem = false) {
+                    if (!chatMessages) return;
+                    
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('chat-message');
+                    
+                    if (isCorrect) {
+                        messageDiv.classList.add('correct');
+                        messageDiv.innerHTML = `
+                            <div class="message-header">
+                                <strong>${username}</strong>
+                                <span class="guess-badge">Correct! 🎉</span>
+                            </div>
+                            <div class="message-content">${message}</div>
+                        `;
+                    } else if (isIncorrect) {
+                        messageDiv.classList.add('incorrect');
+                        messageDiv.innerHTML = `<strong>${username}:</strong> ${message}`;
+                    } else if (isSystem) {
+                        messageDiv.classList.add('system');
+                        messageDiv.innerHTML = `<strong>${username}:</strong> ${message}`;
+                    } else {
+                        messageDiv.innerHTML = `<strong>${username}:</strong> ${message}`;
+                    }
+                    
+                    chatMessages.appendChild(messageDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    if (isCorrect) {
+                        setTimeout(() => {
+                            messageDiv.classList.add('celebrate');
+                        }, 100);
+                    }
+                }
+
+                function showLeaderboard(leaderboard) {
+                    gameScreen.classList.add('hidden');
+                    leaderboardScreen.classList.remove('hidden');
+                    
+                    const globalLeaderboard = document.getElementById('global-leaderboard');
+                    globalLeaderboard.innerHTML = '';
+                    
+                    leaderboard.forEach((player, index) => {
+                        const li = document.createElement('li');
+                        li.className = `leaderboard-item ${index === 0 ? 'winner' : ''}`;
+                        
+                        li.innerHTML = `
+                            <span class="player-rank">#${index + 1}</span>
+                            <span class="player-name">${player.username} ${player.id === socket.id ? '(You)' : ''}</span>
+                            <div class="player-stats">
+                                <span class="player-score">${player.score} pts</span>
+                                <span class="player-iq">IQ: ${player.iq}</span>
+                            </div>
+                        `;
+                        
+                        globalLeaderboard.appendChild(li);
+                    });
+                    
+                    if (leaderboard[0].id === socket.id) {
+                        document.querySelector('.leaderboard-content').classList.add('celebrate');
+                    }
+                }
+            }
+
+            // Initialize language on page load
+            updateLanguage();
+        });
+    </script>
+</body>
+</html>
