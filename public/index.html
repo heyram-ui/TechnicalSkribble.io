@@ -1,117 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Technical Skribbl.io - Enhanced</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <!-- Start Game Animation -->
+    <!-- Start Game Animation -->
     <div id="start-animation" class="start-animation hidden">
+        <div class="cyber-grid"></div>
         <div class="animation-content">
-            <h1>🚀 Technical Skribbl.io</h1>
-            <p>Get ready to draw and guess technical terms!</p>
-            <div class="code-animation">
-                <span>&nbsp;&nbsp;Welcome To Our New Creativity</span><br>
-              
+            <h1 class="glitch-text" data-text="SYSTEM OPTIMIZED">SYSTEM OPTIMIZED</h1>
+            <div class="loading-bar-container">
+                <div class="loading-bar"></div>
             </div>
+            <p class="status-text">INITIALIZING NEURAL LINK...</p>
         </div>
     </div>
 
     <!-- Welcome Screen -->
     <div id="welcome-screen" class="screen">
-        <div class="container">
+        <div class="background-particles" id="particles-js"></div>
+        <div class="container glass-panel">
             <div class="logo">
-                <div class="logo-icon">
+                <div class="logo-icon glitch-effect">
                     <i class="fas fa-pencil-alt"></i>
                 </div>
                 <div class="logo-text">
-                    <h1>Technical Skribbl.io</h1>
-                    <div class="tagline">Play is the highest form of research</div>
-                </div>
-            </div>
-            <p class="subtitle">Challenge your technical knowledge with friends! 🎨🚀</p>
-            
-            <div class="input-group">
-                <div class="input-with-icon">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="username-input" placeholder="Enter your username" maxlength="15">
+                    <h1 class="neon-text">TECH SKRIBBL</h1>
+                    <div class="tagline">CODE • DRAW • DOMINATE</div>
                 </div>
             </div>
 
-            <div class="language-selector">
-                <label for="language-select"><i class="fas fa-globe"></i> Select Language</label>
-                <select id="language-select">
-                    <option value="en">English</option>
-                    <option value="ml">Malayalam</option>
-                    <option value="ta">Tamil</option>
-                    <option value="hi">Hindi</option>
-                    <option value="es">Spanish</option>
-                    <option value="fr">French</option>
-                </select>
-            </div>
-            
-            <div class="button-group">
-                <button id="create-room-btn" class="btn-primary">
-                    <i class="fas fa-plus-circle"></i> Create Room
-                </button>
-                
-                <div class="or-divider">
-                    <span>OR</span>
+            <div class="input-group">
+                <div class="input-with-icon">
+                    <i class="fas fa-user-astronaut"></i>
+                    <input type="text" id="username-input" placeholder="CODENAME" maxlength="15">
                 </div>
-                
+            </div>
+
+            <div class="button-group">
+                <button id="create-room-btn" class="btn-primary glitch-hover">
+                    <span class="btn-content"><i class="fas fa-plus-circle"></i> INITIALIZE ROOM</span>
+                </button>
+
+                <div class="or-divider">
+                    <span>// OR //</span>
+                </div>
+
                 <div class="input-group">
                     <div class="input-with-icon">
-                        <i class="fas fa-door-open"></i>
-                        <input type="text" id="room-id-input" placeholder="Enter room code" maxlength="6">
+                        <i class="fas fa-key"></i>
+                        <input type="text" id="room-id-input" placeholder="ACCESS CODE" maxlength="6">
                     </div>
                 </div>
-                
-                <button id="join-room-btn" class="btn-secondary">
-                    <i class="fas fa-sign-in-alt"></i> Join Room
+
+                <button id="join-room-btn" class="btn-secondary glitch-hover">
+                    <span class="btn-content"><i class="fas fa-network-wired"></i> JOIN NETWORK</span>
                 </button>
             </div>
-            
+
             <div id="error-message" class="error"></div>
 
             <!-- Start Game Message Display -->
             <div id="start-message" class="start-message hidden">
                 <div class="message-content">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <span>Starting game... Please wait!</span>
+                    <i class="fas fa-cog fa-spin"></i>
+                    <span>SYSTEM INITIALIZING...</span>
                 </div>
             </div>
 
             <div class="features">
-                <h3>🎯 Why Play Technical Skribbl.io?</h3>
-                <div class="feature-list">
-                    <div class="feature-item">
-                        <i class="fas fa-brain"></i>
-                        <span>Boost Technical IQ</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-code"></i>
-                        <span>Learn Programming Concepts</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-trophy"></i>
-                        <span>Compete with Friends</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-palette"></i>
-                        <span>Creative Expression</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-users"></i>
-                        <span>Team Building</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-rocket"></i>
-                        <span>Fun Learning Experience</span>
-                    </div>
+                <div class="feature-item">
+                    <i class="fas fa-brain"></i>
+                    <span>Tech IQ</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-code"></i>
+                    <span>Code Concepts</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-rocket"></i>
+                    <span>Multiplayer</span>
                 </div>
             </div>
         </div>
@@ -130,7 +107,7 @@
                     </button>
                 </div>
             </div>
-            
+
             <div class="settings-grid">
                 <div class="setting-group">
                     <h3><i class="fas fa-users"></i> Players</h3>
@@ -146,7 +123,7 @@
                         <button class="option-btn" data-value="10">10</button>
                     </div>
                 </div>
-                
+
                 <div class="setting-group">
                     <h3><i class="fas fa-clock"></i> Draw Time</h3>
                     <div class="options">
@@ -158,7 +135,7 @@
                         <button class="option-btn" data-value="420">7 min</button>
                     </div>
                 </div>
-                
+
                 <div class="setting-group">
                     <h3><i class="fas fa-redo"></i> Rounds</h3>
                     <div class="options">
@@ -170,7 +147,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="button-group">
                 <button id="back-btn" class="btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back
@@ -209,7 +186,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="players-list">
                     <div class="players-header">
                         <h3><i class="fas fa-users"></i> Players</h3>
@@ -219,7 +196,7 @@
                         <ul id="players-container" class="players-container"></ul>
                     </div>
                 </div>
-                
+
                 <div class="chat-container">
                     <div class="chat-header">
                         <h3><i class="fas fa-comments"></i> Chat</h3>
@@ -233,7 +210,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Game Area -->
             <div class="game-area">
                 <div class="canvas-container">
@@ -247,7 +224,7 @@
                         <i class="fas fa-eye"></i> View Word
                     </button>
                 </div>
-                
+
                 <div class="tools">
                     <div class="tools-section">
                         <h4>Colors</h4>
@@ -263,10 +240,11 @@
                             <div class="color-option" data-color="brown" style="background-color: brown;"></div>
                             <div class="color-option" data-color="gray" style="background-color: gray;"></div>
                             <div class="color-option" data-color="cyan" style="background-color: cyan;"></div>
-                            <div class="color-option" data-color="white" style="background-color: white; border: 1px solid #ccc;"></div>
+                            <div class="color-option" data-color="white"
+                                style="background-color: white; border: 1px solid #ccc;"></div>
                         </div>
                     </div>
-                    
+
                     <div class="tools-section">
                         <h4>Brush Size</h4>
                         <div class="brush-size">
@@ -274,7 +252,7 @@
                             <span id="brush-size-value">5px</span>
                         </div>
                     </div>
-                    
+
                     <div class="tools-section">
                         <h4>Tools</h4>
                         <div class="tool-buttons">
@@ -292,7 +270,7 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <button id="start-game-btn-bottom" class="btn-primary hidden">
                         <i class="fas fa-play"></i> Start Game
                     </button>
@@ -308,29 +286,29 @@
                 <h1><i class="fas fa-trophy"></i> Leaderboard</h1>
                 <p>Top performers in Technical Skribbl.io</p>
             </div>
-            
+
             <div class="leaderboard-content">
                 <div class="leaderboard-tabs">
                     <button class="tab-btn active" data-tab="global">Global</button>
                     <button class="tab-btn" data-tab="friends">Friends</button>
                     <button class="tab-btn" data-tab="today">Today</button>
                 </div>
-                
+
                 <div class="leaderboard-list-container">
                     <ul id="global-leaderboard" class="leaderboard-list active">
                         <!-- Global leaderboard will be populated here -->
                     </ul>
-                    
+
                     <ul id="friends-leaderboard" class="leaderboard-list">
                         <!-- Friends leaderboard will be populated here -->
                     </ul>
-                    
+
                     <ul id="today-leaderboard" class="leaderboard-list">
                         <!-- Today's leaderboard will be populated here -->
                     </ul>
                 </div>
             </div>
-            
+
             <div class="button-group">
                 <button id="back-to-game-btn" class="btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to Game
@@ -345,4 +323,5 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

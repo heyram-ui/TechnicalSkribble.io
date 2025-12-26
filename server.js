@@ -18,52 +18,60 @@ const users = new Map();
 const technicalQuestions = [
     // Programming Concepts
     { question: 'The first node of a tree data structure is called', answer: 'root', category: 'Data Structures' },
-    { question: 'What keyword is used to define a constant variable in Java?', answer: 'final', category: 'Java' },
-    { question: 'Which data structure follows LIFO principle?', answer: 'stack', category: 'Data Structures' },
-    { question: 'What does API stand for in programming?', answer: 'Application Programming Interface', category: 'Programming' },
-    { question: 'Which loop is guaranteed to execute at least once in Java?', answer: 'do-while', category: 'Java' },
-    
-    // C++ Questions
-    { question: 'In C++, what operator is used for dynamic memory allocation?', answer: 'new', category: 'C++' },
-    { question: 'What is the extension for C++ header files?', answer: '.h', category: 'C++' },
-    { question: 'Which keyword is used for function templates in C++?', answer: 'template', category: 'C++' },
-    { question: 'What does STL stand for in C++?', answer: 'Standard Template Library', category: 'C++' },
-    { question: 'Which operator is used for scope resolution in C++?', answer: '::', category: 'C++' },
-    
-    // Java Questions
+    { question: 'What data structure follows logical FIFO order?', answer: 'queue', category: 'Data Structures' },
+    { question: 'What is the time complexity of binary search?', answer: 'O(log n)', category: 'Algorithms' },
+    { question: 'Which sorting algorithm has the best average case time complexity?', answer: 'Mergesort', category: 'Algorithms' },
+    { question: 'What connects a node to another node in a tree?', answer: 'Edge', category: 'Data Structures' },
+    { question: 'What is the process of finding errors in software code?', answer: 'Debugging', category: 'Software Engineering' },
+
+    // Web Development
+    { question: 'What does HTML stand for?', answer: 'HyperText Markup Language', category: 'Web' },
+    { question: 'Which HTTP method is used to update a resource?', answer: 'PUT', category: 'Web' },
+    { question: 'What is the standard port for HTTPS?', answer: '443', category: 'Web' },
+    { question: 'What does CSS stand for?', answer: 'Cascading Style Sheets', category: 'Web' },
+    { question: 'Which method converts JSON string to object?', answer: 'JSON.parse', category: 'Web' },
+    { question: 'What does DOM stand for?', answer: 'Document Object Model', category: 'Web' },
+    { question: 'Which HTML tag is used for internal CSS?', answer: 'style', category: 'Web' },
+    { question: 'What property changes text color in CSS?', answer: 'color', category: 'Web' },
+
+    // JavaScript
+    { question: 'Which keyword declares a block-scoped variable?', answer: 'let', category: 'JavaScript' },
+    { question: 'What is the result of typeof null?', answer: 'object', category: 'JavaScript' },
+    { question: 'Which method adds an element to the end of an array?', answer: 'push', category: 'JavaScript' },
+    { question: 'What is a function passed as an argument called?', answer: 'callback', category: 'JavaScript' },
+    { question: 'Which operator checks both value and type?', answer: '===', category: 'JavaScript' },
+
+    // Java & OOP
     { question: 'What is the parent class of all Java classes?', answer: 'Object', category: 'Java' },
     { question: 'Which keyword is used to implement inheritance in Java?', answer: 'extends', category: 'Java' },
     { question: 'What is the default value of a boolean variable in Java?', answer: 'false', category: 'Java' },
     { question: 'Which interface is used for collections that maintain order?', answer: 'List', category: 'Java' },
-    { question: 'What annotation is used to override a method in Java?', answer: '@Override', category: 'Java' },
-    
-    // Python Questions
-    { question: 'Which keyword is used to define a function in Python?', answer: 'def', category: 'Python' },
-    { question: 'What is used to create virtual environments in Python?', answer: 'venv', category: 'Python' },
-    { question: 'Which data type is used for immutable sequences in Python?', answer: 'tuple', category: 'Python' },
-    { question: 'What does PEP stand for in Python?', answer: 'Python Enhancement Proposal', category: 'Python' },
-    { question: 'Which operator is used for exponentiation in Python?', answer: '**', category: 'Python' },
-    
-    // Database Questions
-    { question: 'Which clause is used to filter records in SQL?', answer: 'WHERE', category: 'Database' },
-    { question: 'What is the keyword to remove duplicate rows in SQL?', answer: 'DISTINCT', category: 'Database' },
-    { question: 'Which join returns all records when there is a match in either table?', answer: 'FULL OUTER JOIN', category: 'Database' },
+    { question: 'Concept where a subclass provides implementation for a parent method', answer: 'Overriding', category: 'OOP' },
+    { question: 'Hiding internal details and showing functionality is called', answer: 'Abstraction', category: 'OOP' },
+
+    // Database
+    { question: 'What does SQL stand for?', answer: 'Structured Query Language', category: 'Database' },
+    { question: 'Which command removes all records from a table?', answer: 'TRUNCATE', category: 'Database' },
     { question: 'What does DDL stand for in database management?', answer: 'Data Definition Language', category: 'Database' },
     { question: 'Which constraint ensures all values in a column are unique?', answer: 'UNIQUE', category: 'Database' },
-    
-    // Computer Science
-    { question: 'The component that exhales heat from a computer is called', answer: 'cooler', category: 'Hardware' },
-    { question: 'What does CPU stand for?', answer: 'Central Processing Unit', category: 'Hardware' },
-    { question: 'Which type of memory is volatile?', answer: 'RAM', category: 'Hardware' },
-    { question: 'What connects the processor to the main memory?', answer: 'bus', category: 'Hardware' },
-    { question: 'Which port is commonly used for external hard drives?', answer: 'USB', category: 'Hardware' },
-    
-    // Web Development
-    { question: 'What does CSS stand for?', answer: 'Cascading Style Sheets', category: 'Web' },
-    { question: 'Which HTML tag is used for the largest heading?', answer: 'h1', category: 'Web' },
-    { question: 'What language runs in web browsers?', answer: 'JavaScript', category: 'Web' },
-    { question: 'Which method converts JSON string to object?', answer: 'JSON.parse', category: 'Web' },
-    { question: 'What does DOM stand for?', answer: 'Document Object Model', category: 'Web' }
+    { question: 'What is a virtual table based on the result-set of an SQL statement?', answer: 'View', category: 'Database' },
+
+    // Cloud & DevOps
+    { question: 'What is the primary service for computing in AWS?', answer: 'EC2', category: 'Cloud' },
+    { question: 'Which tool is used for container orchestration?', answer: 'Kubernetes', category: 'DevOps' },
+    { question: 'What is typically used for version control?', answer: 'Git', category: 'DevOps' },
+    { question: 'Platform as a Service', answer: 'PaaS', category: 'Cloud' },
+    { question: 'Infrastructure as Code tool by HashiCorp', answer: 'Terraform', category: 'DevOps' },
+
+    // Cybersecurity
+    { question: 'What protocol secures communication over a computer network?', answer: 'HTTPS', category: 'Security' },
+    { question: 'Attempting to acquire sensitive data by masquerading as a trustworthy source', answer: 'Phishing', category: 'Security' },
+    { question: 'Malicious software designed to damage a computer', answer: 'Malware', category: 'Security' },
+
+    // AI & ML
+    { question: 'What is the learning rate in neural networks?', answer: 'Hyperparameter', category: 'AI' },
+    { question: 'Type of learning where the model is trained on labeled data', answer: 'Supervised', category: 'AI' },
+    { question: 'Python library primarily used for data manipulation', answer: 'Pandas', category: 'AI' }
 ];
 
 // Generate a random room ID
@@ -123,8 +131,8 @@ function startRound(roomId) {
     // Notify the drawer of the question and answer
     const drawer = room.players[room.drawerIndex];
     if (drawer) {
-        io.to(drawer.id).emit('your-turn', { 
-            question: room.currentQuestion, 
+        io.to(drawer.id).emit('your-turn', {
+            question: room.currentQuestion,
             answer: room.currentAnswer,
             category: room.currentCategory
         });
@@ -188,8 +196,8 @@ function nextRound(roomId) {
         // Game ended, calculate final scores and IQs
         const leaderboard = room.players.map(player => {
             const iq = calculateIQ(
-                player.score, 
-                room.rounds, 
+                player.score,
+                room.rounds,
                 player.correctGuesses || 0,
                 player.quickGuesses || 0
             );
@@ -200,12 +208,12 @@ function nextRound(roomId) {
         }).sort((a, b) => b.score - a.score);
 
         const winner = leaderboard[0];
-        
+
         io.to(roomId).emit('game-ended', {
             winner: winner,
             leaderboard: leaderboard
         });
-        
+
         // Reset game state but keep room
         room.gameState = 'waiting';
         room.currentRound = 0;
@@ -220,7 +228,7 @@ function nextRound(roomId) {
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
-    
+
     // Handle creating a new room
     socket.on('create-room', (username) => {
         if (!username || username.trim() === '') {
@@ -230,13 +238,13 @@ io.on('connection', (socket) => {
 
         const roomId = generateRoomId();
         socket.join(roomId);
-        
+
         // Initialize room state
         rooms.set(roomId, {
-            players: [{ 
-                id: socket.id, 
-                username: username.trim(), 
-                score: 0, 
+            players: [{
+                id: socket.id,
+                username: username.trim(),
+                score: 0,
                 isDrawing: false,
                 correctGuesses: 0,
                 quickGuesses: 0,
@@ -256,13 +264,13 @@ io.on('connection', (socket) => {
             maxPlayers: 4,
             correctGuessers: new Set()
         });
-        
+
         users.set(socket.id, { roomId, username: username.trim(), isCreator: true });
-        
+
         socket.emit('room-created', roomId);
         io.to(roomId).emit('update-players', rooms.get(roomId).players);
     });
-    
+
     // Handle joining a room
     socket.on('join-room', (data) => {
         if (!data || !data.roomId || !data.username) {
@@ -272,12 +280,12 @@ io.on('connection', (socket) => {
 
         const { roomId, username } = data;
         const room = rooms.get(roomId);
-        
+
         if (!room) {
             socket.emit('join-error', 'Room not found');
             return;
         }
-        
+
         if (room.players.length >= room.maxPlayers) {
             socket.emit('join-error', 'Room is full');
             return;
@@ -287,98 +295,98 @@ io.on('connection', (socket) => {
             socket.emit('join-error', 'Game is already in progress');
             return;
         }
-        
+
         socket.join(roomId);
-        
+
         // Add player to room
-        room.players.push({ 
-            id: socket.id, 
-            username: username.trim(), 
-            score: 0, 
+        room.players.push({
+            id: socket.id,
+            username: username.trim(),
+            score: 0,
             isDrawing: false,
             correctGuesses: 0,
             quickGuesses: 0,
             roundsDrawn: 0
         });
         users.set(socket.id, { roomId, username: username.trim(), isCreator: false });
-        
+
         socket.emit('room-joined', {
             players: room.players,
             gameState: room.gameState,
             roomId: roomId
         });
-        
+
         io.to(roomId).emit('update-players', room.players);
         io.to(roomId).emit('user-joined', username.trim());
     });
-    
+
     // Handle drawing data
     socket.on('drawing', (data) => {
         const user = users.get(socket.id);
         if (!user) return;
-        
+
         const room = rooms.get(user.roomId);
         if (!room || room.gameState !== 'playing') return;
 
         const player = room.players.find(p => p.id === socket.id);
         if (!player || !player.isDrawing) return;
-        
+
         room.drawings.push(data);
         socket.to(user.roomId).emit('drawing', data);
     });
-    
+
     // Handle fill canvas
     socket.on('fill-canvas', (data) => {
         const user = users.get(socket.id);
         if (!user) return;
-        
+
         const room = rooms.get(user.roomId);
         if (!room || room.gameState !== 'playing') return;
 
         const player = room.players.find(p => p.id === socket.id);
         if (!player || !player.isDrawing) return;
-        
+
         io.to(user.roomId).emit('fill-canvas', data);
     });
-    
+
     // Handle clear canvas
     socket.on('clear-canvas', () => {
         const user = users.get(socket.id);
         if (!user) return;
-        
+
         const room = rooms.get(user.roomId);
         if (!room || room.gameState !== 'playing') return;
 
         const player = room.players.find(p => p.id === socket.id);
         if (!player || !player.isDrawing) return;
-        
+
         room.drawings = [];
         io.to(user.roomId).emit('clear-canvas');
     });
-    
+
     // Handle undo
     socket.on('undo', () => {
         const user = users.get(socket.id);
         if (!user) return;
-        
+
         const room = rooms.get(user.roomId);
         if (!room || room.gameState !== 'playing') return;
 
         const player = room.players.find(p => p.id === socket.id);
         if (!player || !player.isDrawing) return;
-        
+
         if (room.drawings.length > 0) {
             room.drawings.pop();
         }
-        
+
         socket.to(user.roomId).emit('undo');
     });
-    
+
     // Handle chat messages
     socket.on('send-message', (message) => {
         const user = users.get(socket.id);
         if (!user) return;
-        
+
         const room = rooms.get(user.roomId);
         if (!room || room.gameState !== 'playing') return;
 
@@ -391,10 +399,10 @@ io.on('connection', (socket) => {
             });
             return;
         }
-        
+
         // Check if message is the correct answer
         const isCorrect = message.toLowerCase().trim() === room.currentAnswer.toLowerCase();
-        
+
         if (isCorrect) {
             // Check if player already guessed correctly
             if (room.correctGuessers.has(socket.id)) {
@@ -414,29 +422,29 @@ io.on('connection', (socket) => {
                 const points = 10 + timeBonus;
                 guessingPlayer.score += points;
                 guessingPlayer.correctGuesses = (guessingPlayer.correctGuesses || 0) + 1;
-                
+
                 // Track quick guesses (within first 30 seconds)
                 if (room.currentTime > room.roundTime - 30) {
                     guessingPlayer.quickGuesses = (guessingPlayer.quickGuesses || 0) + 1;
                 }
-                
+
                 // Add to correct guessers
                 room.correctGuessers.add(socket.id);
-                
+
                 // Notify all players
                 io.to(user.roomId).emit('correct-guess', {
                     username: user.username,
                     score: points,
                     timeRemaining: room.currentTime
                 });
-                
+
                 io.to(user.roomId).emit('update-players', room.players);
-                
+
                 // Check if all players guessed correctly
-                const remainingPlayers = room.players.filter(p => 
+                const remainingPlayers = room.players.filter(p =>
                     !p.isDrawing && !room.correctGuessers.has(p.id)
                 );
-                
+
                 if (remainingPlayers.length === 0) {
                     // All players guessed correctly, end round early
                     clearInterval(room.timerInterval);
@@ -453,15 +461,15 @@ io.on('connection', (socket) => {
             });
         }
     });
-    
+
     // Handle view word request
     socket.on('view-word', () => {
         const user = users.get(socket.id);
         if (!user) return;
-        
+
         const room = rooms.get(user.roomId);
         if (!room) return;
-        
+
         const player = room.players.find(p => p.id === socket.id);
         if (player) {
             socket.emit('view-word', {
@@ -471,15 +479,15 @@ io.on('connection', (socket) => {
             });
         }
     });
-    
+
     // Handle start game
     socket.on('start-game', (settings) => {
         const user = users.get(socket.id);
         if (!user) return;
-        
+
         const room = rooms.get(user.roomId);
         if (!room) return;
-        
+
         if (!user.isCreator) {
             socket.emit('join-error', 'Only the room creator can start the game');
             return;
@@ -489,29 +497,29 @@ io.on('connection', (socket) => {
             socket.emit('join-error', 'Need at least 2 players to start the game');
             return;
         }
-        
+
         // Validate settings
         if (settings.players < 2 || settings.players > 10) {
             socket.emit('join-error', 'Players must be between 2 and 10');
             return;
         }
-        
+
         if (settings.drawTime < 30 || settings.drawTime > 300) {
             socket.emit('join-error', 'Draw time must be between 30 seconds and 5 minutes');
             return;
         }
-        
+
         if (settings.rounds < 1 || settings.rounds > 10) {
             socket.emit('join-error', 'Rounds must be between 1 and 10');
             return;
         }
-        
+
         // Update room settings
         room.roundTime = settings.drawTime;
         room.rounds = settings.rounds;
         room.maxPlayers = settings.players;
         room.currentRound = 0;
-        
+
         // Reset all player scores and stats
         room.players.forEach(player => {
             player.score = 0;
@@ -520,31 +528,31 @@ io.on('connection', (socket) => {
             player.quickGuesses = 0;
             player.roundsDrawn = 0;
         });
-        
+
         startRound(user.roomId);
     });
 
     // Handle disconnection
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
-        
+
         const user = users.get(socket.id);
         if (!user) return;
-        
+
         const room = rooms.get(user.roomId);
         if (room) {
             if (room.timerInterval) {
                 clearInterval(room.timerInterval);
                 room.timerInterval = null;
             }
-            
+
             const playerIndex = room.players.findIndex(player => player.id === socket.id);
             if (playerIndex !== -1) {
                 const disconnectedPlayer = room.players[playerIndex];
                 room.players.splice(playerIndex, 1);
-                
+
                 io.to(user.roomId).emit('user-left', disconnectedPlayer.username);
-                
+
                 if (room.players.length === 0) {
                     rooms.delete(user.roomId);
                 } else {
@@ -552,7 +560,7 @@ io.on('connection', (socket) => {
                         clearInterval(room.timerInterval);
                         nextRound(user.roomId);
                     }
-                    
+
                     if (user.isCreator) {
                         const newCreator = room.players[0];
                         if (newCreator) {
@@ -562,12 +570,12 @@ io.on('connection', (socket) => {
                             }
                         }
                     }
-                    
+
                     io.to(user.roomId).emit('update-players', room.players);
                 }
             }
         }
-        
+
         users.delete(socket.id);
     });
 });
