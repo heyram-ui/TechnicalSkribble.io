@@ -28,7 +28,11 @@ body {
     color: var(--text-primary);
     font-family: var(--font-body);
     height: 100vh;
+    height: 100dvh;
+    /* Mobile viewport fix */
     overflow: hidden;
+    overscroll-behavior: none;
+    /* Prevent drag-back/refresh */
     background-image:
         radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.1) 0%, transparent 25%),
         radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.1) 0%, transparent 25%);
@@ -49,6 +53,8 @@ body {
     perspective: 1000px;
     transform-style: preserve-3d;
     animation: gridMove 20s linear infinite;
+    pointer-events: none;
+    /* Ensure clicks pass through */
 }
 
 @keyframes gridMove {
@@ -88,6 +94,14 @@ body {
     width: 100%;
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+}
+
+#drawing-canvas {
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    touch-action: none;
+    /* Critical for mobile drawing */
 }
 
 .screen {
@@ -599,13 +613,67 @@ button {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+        width: 95%;
+    }
+
     .game-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
     }
 
     .sidebar {
+        width: 100%;
+        height: 60px;
+        /* Collapsed height */
+        padding: 0.5rem;
+        flex-direction: row;
+        align-items: center;
+        overflow-y: hidden;
+        overflow-x: auto;
+        order: 2;
+        /* Move to bottom or top depending on pref, keeping simplified */
+        border-right: none;
+        border-top: 1px solid var(--glass-border);
+        background: black;
+    }
+
+    .sidebar>* {
         display: none;
-        /* Mobile optimization needed */
+        /* Hide most sidebar elements on mobile initially to verify core flow first */
+    }
+
+    /* Show just a simple players indicator or similar if needed, 
+       but for now let's focus on the canvas area being maximized */
+
+    .game-area {
+        height: calc(100dvh - 60px - 80px);
+        /* Canvas takes remaining space */
+        order: 1;
+    }
+
+    .canvas-container {
+        margin: 5px;
+        box-shadow: none;
+        border: 1px solid var(--glass-border);
+    }
+
+    .tools {
+        padding: 0.5rem;
+        gap: 0.5rem;
+        justify-content: center;
+        order: 3;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    /* Adjust tools for better touch targets */
+    .tool-btn,
+    .color-option {
+        width: 44px;
+        height: 44px;
+        /* Larger touch target */
     }
 }

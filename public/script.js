@@ -589,7 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Show loading state
                 viewWordBtn.innerHTML = '<i class="fas fa-spinner loading"></i> Loading...';
                 setTimeout(() => {
-                    viewWordBtn.innerHTML = '<i class="fas fa-eye"></i> ' + translations[selectedLanguage].viewWord;
+                    viewWordBtn.innerHTML = '<i class="fas fa-eye"></i> View Word';
                 }, 1000);
             }
         });
@@ -681,7 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (viewWordBtn) viewWordBtn.classList.remove('hidden');
             } else {
                 removeCanvasEvents();
-                if (messageInput) messageInput.placeholder = translations[selectedLanguage].typeGuess;
+                if (messageInput) messageInput.placeholder = 'Type your guess...';
                 if (viewWordBtn) viewWordBtn.classList.remove('hidden');
             }
 
@@ -712,14 +712,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (viewWordBtn) viewWordBtn.classList.remove('hidden');
             } else {
                 removeCanvasEvents();
-                if (messageInput) messageInput.placeholder = translations[selectedLanguage].typeGuess;
+                if (messageInput) messageInput.placeholder = 'Type your guess...';
                 if (viewWordBtn) viewWordBtn.classList.remove('hidden');
             }
 
             // Update current drawer display
             const drawer = players.find(p => p.isDrawing);
             if (drawer && currentDrawer) {
-                currentDrawer.textContent = translations[selectedLanguage].drawing + drawer.username;
+                currentDrawer.textContent = 'Drawing: ' + drawer.username;
             }
         });
 
